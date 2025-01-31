@@ -1,39 +1,32 @@
+// src/router/index.ts
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import TabsPage from '../views/TabsPage.vue'
+import CurrentWeather from '@/views/CurrentWeather.vue';
+import HourlyForecast from '@/views/HourlyForecast.vue';
+import DailyForecast from '@/views/DailyForecast.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/tabs/tab1'
+    redirect: '/current'
   },
   {
-    path: '/tabs/',
-    component: TabsPage,
-    children: [
-      {
-        path: '',
-        redirect: '/tabs/tab1'
-      },
-      {
-        path: 'tab1',
-        component: () => import('@/views/Tab1Page.vue')
-      },
-      {
-        path: 'tab2',
-        component: () => import('@/views/Tab2Page.vue')
-      },
-      {
-        path: 'tab3',
-        component: () => import('@/views/Tab3Page.vue')
-      }
-    ]
+    path: '/current',
+    component: CurrentWeather
+  },
+  {
+    path: '/hourly',
+    component: HourlyForecast
+  },
+  {
+    path: '/daily',
+    component: DailyForecast
   }
-]
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
-})
+});
 
-export default router
+export default router;
