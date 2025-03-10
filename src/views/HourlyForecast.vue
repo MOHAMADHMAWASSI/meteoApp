@@ -21,6 +21,10 @@
           </ion-note>
         </ion-item>
       </ion-list>
+      <!-- 🔹 Ajout d'un message d'erreur si les données sont absentes -->
+      <ion-text v-else-if="errorMessage">
+        <p class="error-message">{{ errorMessage }}</p>
+      </ion-text>
       <ion-spinner v-else></ion-spinner>
     </ion-content>
   </ion-page>
@@ -28,13 +32,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonNote, IonSpinner, IonIcon } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonNote, IonSpinner, IonIcon, IonText } from '@ionic/vue';
 import { WeatherService } from '@/services/WeatherService';
 import { WeatherData } from '@/types/weather';
 import { sunny, cloud, rainy, snow } from 'ionicons/icons'; // Icônes météo
 
 // Stocke les données météo
 const weather = ref<WeatherData | null>(null);
+const errorMessage = ref<string | null>(null);
 
 // Fonction pour formater l'heure (HH:MM)
 const formatHour = (time: string) => {
@@ -59,11 +64,18 @@ onMounted(async () => {
     weather.value = await WeatherService.getWeatherData();
   } catch (error) {
     console.error("Erreur lors du chargement des données météo", error);
+    errorMessage.value = error instanceof Error ? error.message : "Impossible de charger les prévisions.";
   }
 });
 </script>
 
 <style scoped>
+.error-message {
+  color: red;
+  text-align: center;
+  font-weight: bold;
+}
+
 ion-note {
   display: flex;
   align-items: center;
