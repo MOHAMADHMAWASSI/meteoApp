@@ -31,6 +31,10 @@
             <p v-if="weatherData.current.wind_speed_10m">Vent: {{ weatherData.current.wind_speed_10m }} km/h</p>
             <!-- Affichage de la pression si disponible -->
             <p v-if="weatherData.current.pressure_msl">Pression: {{ weatherData.current.pressure_msl }} hPa</p>
+            <!-- Affichage de la visibilité si disponible -->
+            <p v-if="weatherData.current.visibility">Visibilité: {{ weatherData.current.visibility }} km</p>
+            <!-- Affichage de l'indice UV si disponible -->
+            <p v-if="weatherData.current.uv_index">Indice UV: {{ weatherData.current.uv_index }}</p>
           </ion-card-content>
         </ion-card>
         <!-- Si les données météo ne sont pas encore chargées, on affiche un spinner -->
@@ -38,6 +42,13 @@
       </transition>
       <!-- Affichage du message d'erreur si une erreur se produit -->
       <div v-if="error" class="error-message">{{ error }}</div>
+      <!-- Affichage des prévisions météorologiques -->
+      <div v-if="forecastData" class="forecast">
+        <h2>Prévisions</h2>
+        <div v-for="day in forecastData.daily" :key="day.date" class="forecast-day">
+          <p>{{ day.date }}: {{ day.temperature }}°C, {{ day.weather_description }}</p>
+        </div>
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -46,11 +57,14 @@
 import { ref, onMounted, computed } from 'vue';  // Importation des fonctions de Vue.js
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon, IonSpinner } from '@ionic/vue';  // Importation des composants d'Ionic
 import { WeatherService } from '../services/WeatherService';  // Service pour récupérer les données météo
-import type { WeatherData } from '../types/weather';  // Type pour définir la structure des données météo
+import type { WeatherData, ForecastData } from '../types/weather';  // Type pour définir la structure des données météo
 import { sunny, cloud, rainy, snow } from 'ionicons/icons';  // Icônes pour différentes conditions météorologiques
 
 // Variable pour stocker les données météo récupérées
 const weatherData = ref<WeatherData | null>(null);
+
+// Variable pour stocker les prévisions météorologiques
+const forecastData = ref<ForecastData | null>(null);
 
 // Variable pour stocker la date et l'heure actuelles
 const currentDateTime = ref<string>('');
@@ -89,6 +103,8 @@ onMounted(async () => {
   try {
     // Récupérer les données météo via le service WeatherService
     weatherData.value = await WeatherService.getWeatherData();
+    // Récupérer les prévisions météorologiques via le service WeatherService
+    forecastData.value = await WeatherService.getForecastData();
     // Mettre à jour la date et l'heure actuelles
     updateDateTime();
     setInterval(updateDateTime, 60000);  // Mettre à jour chaque minute
@@ -139,6 +155,15 @@ ion-content {
   color: red;
   text-align: center;
   margin-top: 20px;
+}
+
+/* Stylisation des prévisions météorologiques */
+.forecast {
+  margin-top: 20px;
+  color: white;
+}
+.forecast-day {
+  margin-bottom: 10px;
 }
 
 @keyframes rotate {
