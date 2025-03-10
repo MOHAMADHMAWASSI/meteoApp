@@ -77,7 +77,7 @@ function updateMonth() {
 
 <style scoped>
 .error-message {
-  color: red;
+  color: #ff4444; /* Changement de couleur */
   text-align: center;
   font-weight: bold;
 }
@@ -86,7 +86,7 @@ function updateMonth() {
   text-align: center;
   font-size: 1.2em;
   margin-bottom: 20px;
-  color: black;
+  color: #333; /* Changement de couleur */
 }
 
 ion-note {
@@ -95,7 +95,8 @@ ion-note {
 }
 
 ion-icon {
-  margin-right: 8px; /* Espace entre l'icône et la température */
+  margin-right: 8px;
+  color: #55acee; /* Changement de couleur */
 }
 
 ion-list {
@@ -109,13 +110,14 @@ ion-item {
 ion-label {
   font-weight: bold;
   font-size: 1.1em;
+  color: #333; /* Changement de couleur */
 }
 
 /* Stylisation des éléments de la liste de prévisions */
 .forecast-list {
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  background-color: rgba(255, 255, 255, 0.8);
+  background: linear-gradient(145deg, #e2e8ec, #ffffff); /* Ajout d'un dégradé */
 }
 
 .forecast-item {

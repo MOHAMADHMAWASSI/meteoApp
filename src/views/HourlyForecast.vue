@@ -11,9 +11,9 @@
         Mois: {{ currentMonth }}
       </div>
       <!-- Vérification de l'existence des données -->
-      <ion-list v-if="weather">
+      <ion-list v-if="weather" class="forecast-list">
         <!-- Itération sur les 24 heures -->
-        <ion-item v-for="(temp, index) in weather.hourly.temperature_2m.slice(0, 24)" :key="index">
+        <ion-item v-for="(temp, index) in weather.hourly.temperature_2m.slice(0, 24)" :key="index" class="forecast-item">
           <!-- Affichage de l'heure au format "HH:MM" -->
           <ion-label>
             {{ formatHour(weather.hourly.time[index]) }}
@@ -83,7 +83,7 @@ function updateMonth() {
 
 <style scoped>
 .error-message {
-  color: red;
+  color: #ff4444; /* Changement de couleur */
   text-align: center;
   font-weight: bold;
 }
@@ -92,7 +92,7 @@ function updateMonth() {
   text-align: center;
   font-size: 1.2em;
   margin-bottom: 20px;
-  color: black;
+  color: #333; /* Changement de couleur */
 }
 
 ion-note {
@@ -101,7 +101,8 @@ ion-note {
 }
 
 ion-icon {
-  margin-right: 8px; /* Espace entre l'icône et la température */
+  margin-right: 8px;
+  color: #55acee; /* Changement de couleur */
 }
 
 ion-list {
@@ -115,5 +116,19 @@ ion-item {
 ion-label {
   font-weight: bold;
   font-size: 1.1em;
+  color: #333; /* Changement de couleur */
+}
+
+/* Stylisation des éléments de la liste de prévisions */
+.forecast-list {
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(145deg, #e2e8ec, #ffffff); /* Ajout d'un dégradé */
+}
+
+.forecast-item {
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
 }
 </style>

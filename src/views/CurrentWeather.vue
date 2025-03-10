@@ -41,9 +41,9 @@
             <p v-if="weatherData.current.uv_index">Indice UV: {{ weatherData.current.uv_index }}</p>
           </ion-card-content>
         </ion-card>
-        <!-- Si les données météo ne sont pas encore chargées, on affiche un spinner -->
-        <ion-spinner v-else></ion-spinner>
       </transition>
+      <!-- Si les données météo ne sont pas encore chargées, on affiche un spinner -->
+      <ion-spinner v-if="!weatherData"></ion-spinner>
       <!-- Affichage du message d'erreur si une erreur se produit -->
       <div v-if="error" class="error-message">{{ error }}</div>
       <!-- Affichage des prévisions météorologiques -->
@@ -149,7 +149,8 @@ ion-content {
   text-align: center;
   font-size: 1.2em;
   margin-bottom: 10px;
-  color: white;
+  color: #fff; /* Changement de couleur */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Ajout d'une ombre portée */
 }
 
 /* Stylisation du mois actuel */
@@ -157,12 +158,15 @@ ion-content {
   text-align: center;
   font-size: 1.2em;
   margin-bottom: 20px;
-  color: white;
+  color: #eee; /* Changement de couleur */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Ajout d'une ombre portée */
 }
 
 /* Animation pour l'icône météo */
 .weather-icon {
   animation: rotate 2s linear infinite;
+  color: #ffcc00; /* Changement de couleur */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Ajout d'une ombre portée */
 }
 
 /* Transition pour les changements de météo */
@@ -175,15 +179,16 @@ ion-content {
 
 /* Stylisation du message d'erreur */
 .error-message {
-  color: red;
+  color: #ff4444; /* Changement de couleur */
   text-align: center;
   margin-top: 20px;
+  font-weight: bold; /* Ajout de gras */
 }
 
 /* Stylisation des prévisions météorologiques */
 .forecast {
   margin-top: 20px;
-  color: white;
+  color: #fff; /* Changement de couleur */
 }
 .forecast-day {
   margin-bottom: 10px;
@@ -192,8 +197,8 @@ ion-content {
 /* Stylisation des cartes météo */
 .weather-card {
   border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(145deg, #e2e8ec, #ffffff); /* Ajout d'un dégradé */
 }
 
 @keyframes rotate {
