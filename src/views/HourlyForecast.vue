@@ -6,6 +6,10 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
+      <!-- Affichage du mois actuel -->
+      <div class="current-month">
+        Mois: {{ currentMonth }}
+      </div>
       <!-- Vérification de l'existence des données -->
       <ion-list v-if="weather">
         <!-- Itération sur les 24 heures -->
@@ -40,6 +44,7 @@ import { sunny, cloud, rainy, snow } from 'ionicons/icons'; // Icônes météo
 // Stocke les données météo
 const weather = ref<WeatherData | null>(null);
 const errorMessage = ref<string | null>(null);
+const currentMonth = ref<string>('');
 
 // Fonction pour formater l'heure (HH:MM)
 const formatHour = (time: string) => {
@@ -62,11 +67,18 @@ const getWeatherIcon = (code: number) => {
 onMounted(async () => {
   try {
     weather.value = await WeatherService.getWeatherData();
+    updateMonth();
   } catch (error) {
     console.error("Erreur lors du chargement des données météo", error);
     errorMessage.value = error instanceof Error ? error.message : "Impossible de charger les prévisions.";
   }
 });
+
+// Fonction pour mettre à jour le mois actuel
+function updateMonth() {
+  const now = new Date();
+  currentMonth.value = now.toLocaleString('default', { month: 'long' });
+}
 </script>
 
 <style scoped>
@@ -74,6 +86,13 @@ onMounted(async () => {
   color: red;
   text-align: center;
   font-weight: bold;
+}
+
+.current-month {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 20px;
+  color: black;
 }
 
 ion-note {

@@ -7,9 +7,13 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
+      <!-- Affichage du mois actuel -->
+      <div class="current-month">
+        Mois: {{ currentMonth }}
+      </div>
       <!-- 🔹 Ajout d'une vérification stricte -->
-      <ion-list v-if="weatherData && weatherData.daily">
-        <ion-item v-for="(maxTemp, index) in weatherData.daily.temperature_2m_max" :key="index">
+      <ion-list v-if="weatherData && weatherData.daily" class="forecast-list">
+        <ion-item v-for="(maxTemp, index) in weatherData.daily.temperature_2m_max" :key="index" class="forecast-item">
           <ion-label>
             {{ new Date(weatherData.daily.time[index]).toLocaleDateString() }}
           </ion-label>
@@ -40,6 +44,7 @@ import { sunny, cloud, rainy, snow } from 'ionicons/icons'; // Icônes météo
 
 const weatherData = ref<WeatherData | null>(null);
 const errorMessage = ref<string | null>(null);
+const currentMonth = ref<string>('');
 
 // Fonction pour obtenir l'icône météo correspondante en fonction du code météo
 const getWeatherIcon = (code: number) => {
@@ -56,11 +61,18 @@ onMounted(async () => {
   try {
     weatherData.value = await WeatherService.getWeatherData();
     console.log("✅ Données météo chargées :", weatherData.value); // 🔹 Vérifie les données
+    updateMonth();
   } catch (error: unknown) {
     console.error("Erreur lors de la récupération des données météo :", error);
     errorMessage.value = error instanceof Error ? error.message : "Impossible de charger les prévisions.";
   }
 });
+
+// Fonction pour mettre à jour le mois actuel
+function updateMonth() {
+  const now = new Date();
+  currentMonth.value = now.toLocaleString('default', { month: 'long' });
+}
 </script>
 
 <style scoped>
@@ -68,6 +80,13 @@ onMounted(async () => {
   color: red;
   text-align: center;
   font-weight: bold;
+}
+
+.current-month {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 20px;
+  color: black;
 }
 
 ion-note {
@@ -90,5 +109,18 @@ ion-item {
 ion-label {
   font-weight: bold;
   font-size: 1.1em;
+}
+
+/* Stylisation des éléments de la liste de prévisions */
+.forecast-list {
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.forecast-item {
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
 }
 </style>

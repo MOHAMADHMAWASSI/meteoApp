@@ -11,9 +11,13 @@
       <div class="current-datetime">
         {{ currentDateTime }}
       </div>
+      <!-- Affichage du mois actuel -->
+      <div class="current-month">
+        Mois: {{ currentMonth }}
+      </div>
       <!-- Si les données météo sont chargées, on affiche la carte avec les informations -->
       <transition name="fade">
-        <ion-card v-if="weatherData">
+        <ion-card v-if="weatherData" class="weather-card">
           <ion-card-header>
             <ion-card-title>
               <!-- L'icône qui change selon la météo avec animation -->
@@ -69,6 +73,9 @@ const forecastData = ref<ForecastData | null>(null);
 // Variable pour stocker la date et l'heure actuelles
 const currentDateTime = ref<string>('');
 
+// Variable pour stocker le mois actuel
+const currentMonth = ref<string>('');
+
 // Variable pour stocker les erreurs
 const error = ref<string | null>(null);
 
@@ -108,6 +115,8 @@ onMounted(async () => {
     // Mettre à jour la date et l'heure actuelles
     updateDateTime();
     setInterval(updateDateTime, 60000);  // Mettre à jour chaque minute
+    // Mettre à jour le mois actuel
+    updateMonth();
   } catch (err) {
     console.error('Error loading weather data:', err);  // Afficher une erreur si la récupération échoue
     error.value = 'Erreur lors du chargement des données météo. Veuillez réessayer plus tard.';
@@ -118,6 +127,12 @@ onMounted(async () => {
 function updateDateTime() {
   const now = new Date();
   currentDateTime.value = now.toLocaleString();
+}
+
+// Fonction pour mettre à jour le mois actuel
+function updateMonth() {
+  const now = new Date();
+  currentMonth.value = now.toLocaleString('default', { month: 'long' });
 }
 </script>
 
@@ -131,6 +146,14 @@ ion-content {
 
 /* Stylisation de la date et de l'heure actuelles */
 .current-datetime {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: white;
+}
+
+/* Stylisation du mois actuel */
+.current-month {
   text-align: center;
   font-size: 1.2em;
   margin-bottom: 20px;
@@ -164,6 +187,13 @@ ion-content {
 }
 .forecast-day {
   margin-bottom: 10px;
+}
+
+/* Stylisation des cartes météo */
+.weather-card {
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 @keyframes rotate {
