@@ -1,0 +1,49 @@
+.error-message {
+  color: #ff4444;
+  text-align: center;
+  font-weight: bold;
+}
+
+.current-month {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+ion-note {
+  display: flex;
+  align-items: center;
+}
+
+ion-icon {
+  margin-right: 8px;
+  color: #55acee;
+}
+
+ion-list {
+  padding: 10px;
+}
+
+ion-item {
+  border-bottom: 1px solid #ddd;
+}
+
+ion-label {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #333;
+}
+
+/* Stylisation des éléments de la liste de prévisions */
+.forecast-list {
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(145deg, #e2e8ec, #ffffff);
+}
+
+.forecast-item {
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+}

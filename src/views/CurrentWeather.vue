@@ -15,6 +15,15 @@
       <div class="current-month">
         Mois: {{ currentMonth }}
       </div>
+
+      <!-- Sélection de la ville -->
+      <ion-item>
+        <ion-label>Ville:</ion-label>
+        <ion-select v-model="selectedCity" @ionChange="loadWeatherData">
+          <ion-select-option v-for="city in cities" :key="city" :value="city">{{ city }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
       <!-- Si les données météo sont chargées, on affiche la carte avec les informations -->
       <transition name="fade">
         <ion-card v-if="weatherData" class="weather-card">
@@ -39,6 +48,11 @@
             <p v-if="weatherData.current.visibility">Visibilité: {{ weatherData.current.visibility }} km</p>
             <!-- Affichage de l'indice UV si disponible -->
             <p v-if="weatherData.current.uv_index">Indice UV: {{ weatherData.current.uv_index }}</p>
+            <!-- Affichage du lever et coucher du soleil -->
+            <p v-if="sunriseTime">Lever du soleil: {{ sunriseTime }}</p>
+            <p v-if="sunsetTime">Coucher du soleil: {{ sunsetTime }}</p>
+            <!-- Affichage de la phase de la lune -->
+            <p v-if="moonPhase">Phase de la lune: {{ moonPhase }}</p>
           </ion-card-content>
         </ion-card>
       </transition>
@@ -58,70 +72,73 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';  // Importation des fonctions de Vue.js
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon, IonSpinner } from '@ionic/vue';  // Importation des composants d'Ionic
-import { WeatherService } from '../services/WeatherService';  // Service pour récupérer les données météo
-import type { WeatherData, ForecastData } from '../types/weather';  // Type pour définir la structure des données météo
-import { sunny, cloud, rainy, snow } from 'ionicons/icons';  // Icônes pour différentes conditions météorologiques
+import { ref, onMounted, computed } from 'vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon, IonSpinner, IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/vue';
+import { WeatherService } from '../services/WeatherService';
+import type { WeatherData, ForecastData } from '../types/weather';
+import { sunny, cloud, rainy, snow } from 'ionicons/icons';
+import './CurrentWeather.css'; // Import du fichier CSS
 
-// Variable pour stocker les données météo récupérées
+// Définir les villes supportées
+const cities = ref(['Paris', 'London', 'New York']);
+const selectedCity = ref('Paris');
+
+// Variables pour stocker les données météo récupérées
 const weatherData = ref<WeatherData | null>(null);
-
-// Variable pour stocker les prévisions météorologiques
 const forecastData = ref<ForecastData | null>(null);
-
-// Variable pour stocker la date et l'heure actuelles
 const currentDateTime = ref<string>('');
-
-// Variable pour stocker le mois actuel
 const currentMonth = ref<string>('');
-
-// Variable pour stocker les erreurs
 const error = ref<string | null>(null);
+
+// Variables pour stocker les informations sur le lever et coucher du soleil et la phase de la lune
+const sunriseTime = ref<string | null>(null);
+const sunsetTime = ref<string | null>(null);
+const moonPhase = ref<string | null>(null);
 
 // Computed property pour déterminer l'icône météo en fonction des données
 const weatherIcon = computed(() => {
-  if (!weatherData.value) return sunny;  // Si aucune donnée, icône par défaut (ensoleillé)
-  const code = weatherData.value.current.weather_code;  // Code représentant le type de météo
+  if (!weatherData.value) return sunny;
+  const code = weatherData.value.current.weather_code;
   switch (code) {
-    case 1: return sunny;  // Ensoleillé
-    case 2: return cloud;  // Nuageux
-    case 3: return rainy;  // Pluvieux
-    case 4: return snow;   // Neigeux
-    default: return sunny; // Si code non reconnu, icône par défaut (ensoleillé)
+    case 1: return sunny;
+    case 2: return cloud;
+    case 3: return rainy;
+    case 4: return snow;
+    default: return sunny;
   }
 });
 
 // Computed property pour déterminer l'image de fond en fonction des données météo
 const backgroundImage = computed(() => {
-  if (!weatherData.value) return 'url(/images/default-bg.jpg)';  // Image par défaut si aucune donnée météo
-  const code = weatherData.value.current.weather_code;  // Code représentant le type de météo
+  if (!weatherData.value) return 'url(/images/default-bg.jpg)';
+  const code = weatherData.value.current.weather_code;
   switch (code) {
-    case 1: return 'url(/images/sunny-bg.jpg)';  // Image pour le temps ensoleillé
-    case 2: return 'url(/images/cloudy-bg.jpg)'; // Image pour le temps nuageux
-    case 3: return 'url(/images/rainy-bg.jpg)';  // Image pour le temps pluvieux
-    case 4: return 'url(/images/snowy-bg.jpg)';  // Image pour le temps neigeux
-    default: return 'url(/images/default-bg.jpg)';  // Image par défaut si code non reconnu
+    case 1: return 'url(/images/sunny-bg.jpg)';
+    case 2: return 'url(/images/cloudy-bg.jpg)';
+    case 3: return 'url(/images/rainy-bg.jpg)';
+    case 4: return 'url(/images/snowy-bg.jpg)';
+    default: return 'url(/images/default-bg.jpg)';
   }
 });
 
-// Fonction pour charger les données météo lorsque le composant est monté
-onMounted(async () => {
+// Fonction pour charger les données météo
+const loadWeatherData = async () => {
   try {
-    // Récupérer les données météo via le service WeatherService
-    weatherData.value = await WeatherService.getWeatherData();
-    // Récupérer les prévisions météorologiques via le service WeatherService
-    forecastData.value = await WeatherService.getForecastData();
-    // Mettre à jour la date et l'heure actuelles
+    weatherData.value = await WeatherService.getWeatherData(selectedCity.value);
+    forecastData.value = await WeatherService.getForecastData(selectedCity.value);
     updateDateTime();
-    setInterval(updateDateTime, 60000);  // Mettre à jour chaque minute
-    // Mettre à jour le mois actuel
     updateMonth();
+
+    // Simuler les données de lever et coucher du soleil et de la phase de la lune
+    sunriseTime.value = '06:00';
+    sunsetTime.value = '18:00';
+    moonPhase.value = 'Pleine lune';
+
   } catch (err) {
-    console.error('Error loading weather data:', err);  // Afficher une erreur si la récupération échoue
+    console.error('Error loading weather data:', err);
     error.value = 'Erreur lors du chargement des données météo. Veuillez réessayer plus tard.';
   }
-});
+};
 
 // Fonction pour mettre à jour la date et l'heure actuelles
 function updateDateTime() {
@@ -134,79 +151,10 @@ function updateMonth() {
   const now = new Date();
   currentMonth.value = now.toLocaleString('default', { month: 'long' });
 }
+
+// Charger les données météo au montage du composant
+onMounted(() => {
+  loadWeatherData();
+  setInterval(updateDateTime, 60000);
+});
 </script>
-
-<style scoped>
-/* Stylisation du contenu avec l'image de fond */
-ion-content {
-  background-size: cover;  /* L'image couvre tout l'écran */
-  background-position: center;  /* L'image est centrée */
-  padding: 20px;  /* Un peu d'espace autour du contenu */
-}
-
-/* Stylisation de la date et de l'heure actuelles */
-.current-datetime {
-  text-align: center;
-  font-size: 1.2em;
-  margin-bottom: 10px;
-  color: #fff; /* Changement de couleur */
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Ajout d'une ombre portée */
-}
-
-/* Stylisation du mois actuel */
-.current-month {
-  text-align: center;
-  font-size: 1.2em;
-  margin-bottom: 20px;
-  color: #eee; /* Changement de couleur */
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Ajout d'une ombre portée */
-}
-
-/* Animation pour l'icône météo */
-.weather-icon {
-  animation: rotate 2s linear infinite;
-  color: #ffcc00; /* Changement de couleur */
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Ajout d'une ombre portée */
-}
-
-/* Transition pour les changements de météo */
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
-  opacity: 0;
-}
-
-/* Stylisation du message d'erreur */
-.error-message {
-  color: #ff4444; /* Changement de couleur */
-  text-align: center;
-  margin-top: 20px;
-  font-weight: bold; /* Ajout de gras */
-}
-
-/* Stylisation des prévisions météorologiques */
-.forecast {
-  margin-top: 20px;
-  color: #fff; /* Changement de couleur */
-}
-.forecast-day {
-  margin-bottom: 10px;
-}
-
-/* Stylisation des cartes météo */
-.weather-card {
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(145deg, #e2e8ec, #ffffff); /* Ajout d'un dégradé */
-}
-
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-</style>

@@ -41,6 +41,7 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem,
 import { WeatherService } from '@/services/WeatherService';
 import type { WeatherData } from '@/types/weather';
 import { sunny, cloud, rainy, snow } from 'ionicons/icons'; // Icônes météo
+import './DailyForecast.css';
 
 const weatherData = ref<WeatherData | null>(null);
 const errorMessage = ref<string | null>(null);
@@ -74,55 +75,3 @@ function updateMonth() {
   currentMonth.value = now.toLocaleString('default', { month: 'long' });
 }
 </script>
-
-<style scoped>
-.error-message {
-  color: #ff4444; /* Changement de couleur */
-  text-align: center;
-  font-weight: bold;
-}
-
-.current-month {
-  text-align: center;
-  font-size: 1.2em;
-  margin-bottom: 20px;
-  color: #333; /* Changement de couleur */
-}
-
-ion-note {
-  display: flex;
-  align-items: center;
-}
-
-ion-icon {
-  margin-right: 8px;
-  color: #55acee; /* Changement de couleur */
-}
-
-ion-list {
-  padding: 10px;
-}
-
-ion-item {
-  border-bottom: 1px solid #ddd;
-}
-
-ion-label {
-  font-weight: bold;
-  font-size: 1.1em;
-  color: #333; /* Changement de couleur */
-}
-
-/* Stylisation des éléments de la liste de prévisions */
-.forecast-list {
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(145deg, #e2e8ec, #ffffff); /* Ajout d'un dégradé */
-}
-
-.forecast-item {
-  margin-bottom: 10px;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.9);
-}
-</style>

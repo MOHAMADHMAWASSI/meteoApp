@@ -1,0 +1,76 @@
+/* Stylisation du contenu avec l'image de fond */
+ion-content {
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+}
+
+/* Stylisation de la date et de l'heure actuelles */
+.current-datetime {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Stylisation du mois actuel */
+.current-month {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 20px;
+  color: #eee;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Animation pour l'icône météo */
+.weather-icon {
+  animation: rotate 2s linear infinite;
+  color: #ffcc00;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Transition pour les changements de météo */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Stylisation du message d'erreur */
+.error-message {
+  color: #ff4444;
+  text-align: center;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+/* Stylisation des prévisions météorologiques */
+.forecast {
+  margin-top: 20px;
+  color: #fff;
+}
+
+.forecast-day {
+  margin-bottom: 10px;
+}
+
+/* Stylisation des cartes météo */
+.weather-card {
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(145deg, #e2e8ec, #ffffff);
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
