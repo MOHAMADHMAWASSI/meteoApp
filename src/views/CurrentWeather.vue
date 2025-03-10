@@ -33,9 +33,9 @@
             <p v-if="weatherData.current.pressure_msl">Pression: {{ weatherData.current.pressure_msl }} hPa</p>
           </ion-card-content>
         </ion-card>
+        <!-- Si les données météo ne sont pas encore chargées, on affiche un spinner -->
+        <ion-spinner v-else></ion-spinner>
       </transition>
-      <!-- Si les données météo ne sont pas encore chargées, on affiche un spinner -->
-      <ion-spinner v-else></ion-spinner>
       <!-- Affichage du message d'erreur si une erreur se produit -->
       <div v-if="error" class="error-message">{{ error }}</div>
     </ion-content>
