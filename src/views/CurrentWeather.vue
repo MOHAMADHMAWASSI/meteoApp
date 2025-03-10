@@ -7,30 +7,37 @@
       </ion-toolbar>
     </ion-header>
     <ion-content :style="{ backgroundImage: `url(${backgroundImage})` }">
+      <!-- Affichage de la date et de l'heure actuelles -->
+      <div class="current-datetime">
+        {{ currentDateTime }}
+      </div>
       <!-- Si les données météo sont chargées, on affiche la carte avec les informations -->
-      <ion-card v-if="weatherData">
-        <ion-card-header>
-          <ion-card-title>
-            <!-- L'icône qui change selon la météo -->
-            <ion-icon :icon="weatherIcon" size="large" />
-            <!-- Affiche la température actuelle -->
-            {{ weatherData.current.temperature_2m }}°C
-          </ion-card-title>
-          <ion-card-subtitle>
-            <!-- Affiche l'humidité actuelle -->
-            Humidité: {{ weatherData.current.relative_humidity_2m }}%
-          </ion-card-subtitle>
-        </ion-card-header>
-        <ion-card-content>
-          <!-- Affichage du vent si disponible -->
-          <p v-if="weatherData.current.wind_speed_10m">Vent: {{ weatherData.current.wind_speed_10m }} km/h</p>
-          <!-- Affichage de la pression si disponible -->
-          <p v-if="weatherData.current.pressure_msl">Pression: {{ weatherData.current.pressure_msl }} hPa</p>
-        </ion-card-content>
-      </ion-card>
-
+      <transition name="fade">
+        <ion-card v-if="weatherData">
+          <ion-card-header>
+            <ion-card-title>
+              <!-- L'icône qui change selon la météo avec animation -->
+              <ion-icon :icon="weatherIcon" size="large" class="weather-icon" />
+              <!-- Affiche la température actuelle -->
+              {{ weatherData.current.temperature_2m }}°C
+            </ion-card-title>
+            <ion-card-subtitle>
+              <!-- Affiche l'humidité actuelle -->
+              Humidité: {{ weatherData.current.relative_humidity_2m }}%
+            </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <!-- Affichage du vent si disponible -->
+            <p v-if="weatherData.current.wind_speed_10m">Vent: {{ weatherData.current.wind_speed_10m }} km/h</p>
+            <!-- Affichage de la pression si disponible -->
+            <p v-if="weatherData.current.pressure_msl">Pression: {{ weatherData.current.pressure_msl }} hPa</p>
+          </ion-card-content>
+        </ion-card>
+      </transition>
       <!-- Si les données météo ne sont pas encore chargées, on affiche un spinner -->
       <ion-spinner v-else></ion-spinner>
+      <!-- Affichage du message d'erreur si une erreur se produit -->
+      <div v-if="error" class="error-message">{{ error }}</div>
     </ion-content>
   </ion-page>
 </template>
@@ -44,6 +51,12 @@ import { sunny, cloud, rainy, snow } from 'ionicons/icons';  // Icônes pour dif
 
 // Variable pour stocker les données météo récupérées
 const weatherData = ref<WeatherData | null>(null);
+
+// Variable pour stocker la date et l'heure actuelles
+const currentDateTime = ref<string>('');
+
+// Variable pour stocker les erreurs
+const error = ref<string | null>(null);
 
 // Computed property pour déterminer l'icône météo en fonction des données
 const weatherIcon = computed(() => {
@@ -76,10 +89,20 @@ onMounted(async () => {
   try {
     // Récupérer les données météo via le service WeatherService
     weatherData.value = await WeatherService.getWeatherData();
-  } catch (error) {
-    console.error('Error loading weather data:', error);  // Afficher une erreur si la récupération échoue
+    // Mettre à jour la date et l'heure actuelles
+    updateDateTime();
+    setInterval(updateDateTime, 60000);  // Mettre à jour chaque minute
+  } catch (err) {
+    console.error('Error loading weather data:', err);  // Afficher une erreur si la récupération échoue
+    error.value = 'Erreur lors du chargement des données météo. Veuillez réessayer plus tard.';
   }
 });
+
+// Fonction pour mettre à jour la date et l'heure actuelles
+function updateDateTime() {
+  const now = new Date();
+  currentDateTime.value = now.toLocaleString();
+}
 </script>
 
 <style scoped>
@@ -88,5 +111,42 @@ ion-content {
   background-size: cover;  /* L'image couvre tout l'écran */
   background-position: center;  /* L'image est centrée */
   padding: 20px;  /* Un peu d'espace autour du contenu */
+}
+
+/* Stylisation de la date et de l'heure actuelles */
+.current-datetime {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 20px;
+  color: white;
+}
+
+/* Animation pour l'icône météo */
+.weather-icon {
+  animation: rotate 2s linear infinite;
+}
+
+/* Transition pour les changements de météo */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0;
+}
+
+/* Stylisation du message d'erreur */
+.error-message {
+  color: red;
+  text-align: center;
+  margin-top: 20px;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
